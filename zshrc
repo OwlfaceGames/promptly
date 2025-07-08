@@ -1,11 +1,10 @@
-
 # allows cmd substitution in prompt
 setopt prompt_subst
 
 # ─────────────────────────────────────────────────────────────
-# Powerlevel10k style prompt character
+# Lambda prompt character
 # ─────────────────────────────────────────────────────────────
-PROMPT_CHAR="❯"
+PROMPT_CHAR="λ"
 
 # Define Nerd Font symbols with explicit Unicode values
 GIT_ICON=$'\uf1d3'       # Git logo
@@ -15,14 +14,10 @@ AHEAD_ICON=$'\uf176'     # Arrow up (ahead)
 BEHIND_ICON=$'\uf175'    # Arrow down (behind)
 DIVERGED_ICON=$'\uf7a5'  # Up/down arrows (diverged)
 SYNC_ICON=$'\u2714'      # Checkmark/tick symbol (✔)
-STAGED_ICON=$'\uf055'    # Plus symbol (staged)
-UNSTAGED_ICON=$'\uf06a'  # Exclamation symbol (unstaged)
-UNTRACKED_ICON=$'\uf29c' # Question mark symbol (untracked)
-STASHED_ICON=$'\uf01c'   # Archive/box symbol (stashed)
-
-# Powerline rounded edge symbols
-ROUNDED_LEFT=$'\uE0B6'   # Rounded left edge
-ROUNDED_RIGHT=$'\uE0B4'  # Rounded right edge
+STAGED_ICON=$'+'    # Plus symbol (staged)
+UNSTAGED_ICON=$'!'  # Exclamation symbol (unstaged)
+UNTRACKED_ICON=$'?' # Question mark symbol (untracked)
+STASHED_ICON=$'$'   # Archive/box symbol (stashed)
 
 # ─────────────────────────────────────────────────────────────
 # Git info function with Nerd Font icons and sync status
@@ -49,11 +44,10 @@ git_prompt_info() {
   # GitHub icon if applicable
   [[ "$remote_url" == *github.com* || "$upstream_url" == *github.com* ]] && host_icon="$GITHUB_ICON"
   
-  local git_bg_color="green"
-  local git_fg_color="black"
-  
+  # Determine text color based on git status
+  local git_color="green"
   if [[ $((staged + unstaged + untracked + stashed)) -gt 0 ]]; then
-    git_bg_color="red"
+    git_color="red"
   fi
 
   # Determine sync (ahead/behind) info
@@ -86,15 +80,14 @@ git_prompt_info() {
   [[ $stashed -gt 0 ]] && stashed_status="${STASHED_ICON} ${stashed}"
 
   # Return the git segment info for use in the prompt
-  echo "${git_bg_color}|${git_fg_color}|${host_icon}|${BRANCH_ICON}|${branch}|${sync_status}|${staged_status}|${unstaged_status}|${untracked_status}|${stashed_status}"
+  echo "${git_color}|${host_icon}|${BRANCH_ICON}|${branch}|${sync_status}|${staged_status}|${unstaged_status}|${untracked_status}|${stashed_status}"
 }
 
 # ─────────────────────────────────────────────────────────────
-# Update prompt timestamp and Git info
+# Update prompt and Git info
 # ─────────────────────────────────────────────────────────────
 precmd() {
   export GIT_INFO=$(git_prompt_info)
-  export PROMPT_TIMESTAMP=$(date +"%H:%M:%S")
   
   # Build the prompt
   build_prompt
@@ -107,55 +100,39 @@ build_prompt() {
   # Start with a newline
   PROMPT=$'\n'
   
-  # Add rounded left edge with cyan color
-  PROMPT+="%F{cyan}${ROUNDED_LEFT}"
+  # Directory segment in cyan
+  PROMPT+="%F{cyan}%~%f"
   
-  # First segment (directory)
-  PROMPT+="%K{cyan}%F{black} %~ %f%k"
-  
-  # Git segment if available (no space before it)
+  # Git segment if available
   if [[ -n "$GIT_INFO" ]]; then
     local git_parts=(${(s:|:)GIT_INFO})
-    local git_bg=${git_parts[1]}
-    local git_fg=${git_parts[2]}
-    local host_icon=${git_parts[3]}
-    local branch_icon=${git_parts[4]}
-    local branch=${git_parts[5]}
-    local sync_status=${git_parts[6]}
-    local staged_status=${git_parts[7]}
-    local unstaged_status=${git_parts[8]}
-    local untracked_status=${git_parts[9]}
-    local stashed_status=${git_parts[10]}
+    local git_color=${git_parts[1]}
+    local host_icon=${git_parts[2]}
+    local branch_icon=${git_parts[3]}
+    local branch=${git_parts[4]}
+    local sync_status=${git_parts[5]}
+    local staged_status=${git_parts[6]}
+    local unstaged_status=${git_parts[7]}
+    local untracked_status=${git_parts[8]}
+    local stashed_status=${git_parts[9]}
     
-    # Start git segment
-    PROMPT+="%K{$git_bg}%F{$git_fg}"
-    
-    # Add git icons with the same color as the text
-    PROMPT+=" ${host_icon} ${branch_icon} ${branch}"
+    # Add separator and start git segment
+    PROMPT+=" %F{white}on%f %F{$git_color}${host_icon} ${branch_icon} ${branch}"
     
     # Add sync status if available
     [[ -n "$sync_status" ]] && PROMPT+=" ${sync_status}"
     
-    # Add status indicators if available
-    [[ -n "$staged_status" ]] && PROMPT+=" ${staged_status}"
-    [[ -n "$unstaged_status" ]] && PROMPT+=" ${unstaged_status}"
-    [[ -n "$untracked_status" ]] && PROMPT+=" ${untracked_status}"
-    [[ -n "$stashed_status" ]] && PROMPT+=" ${stashed_status}"
+    # Add status indicators if available (in different colors for clarity)
+    [[ -n "$staged_status" ]] && PROMPT+=" %F{green}${staged_status}%f"
+    [[ -n "$unstaged_status" ]] && PROMPT+=" %F{yellow}${unstaged_status}%f"
+    [[ -n "$untracked_status" ]] && PROMPT+=" %F{red}${untracked_status}%f"
+    [[ -n "$stashed_status" ]] && PROMPT+=" %F{blue}${stashed_status}%f"
     
     # End git segment
-    PROMPT+=" %k"
-    
-    # Add timestamp segment directly after git segment
-    PROMPT+="%K{240}%F{white} ${PROMPT_TIMESTAMP} "
-  else
-    # If no git info, add timestamp directly after directory
-    PROMPT+="%K{240}%F{white} ${PROMPT_TIMESTAMP} "
+    PROMPT+="%f"
   fi
   
-  # Add rounded right edge with gray color
-  PROMPT+="%f%k%F{240}${ROUNDED_RIGHT}"
-  
-  # Add newline and Powerlevel10k style prompt character for the second line (no background)
+  # Add newline and lambda prompt character for the second line
   PROMPT+=$'\n'"%F{blue}${PROMPT_CHAR}%f "
 }
 
