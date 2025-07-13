@@ -10,7 +10,7 @@ PROMPT_CHAR="❯"
 GIT_ICON=$'\uf1d3'       # Git logo
 GITHUB_ICON=$'\uf408'    # GitHub logo
 BRANCH_ICON=$'\uf418'    # Branch icon
-AHEAD_ICON=$'\uf062'     # Font Awesome solid arrow-up (better baseline alignment)
+AHEAD_ICON=$'\uf176'     # Arrow up (ahead)
 BEHIND_ICON=$'\uf175'    # Arrow down (behind)
 DIVERGED_ICON=$'\uf7a5'  # Up/down arrows (diverged)
 STAGED_ICON=$'+'         # Plus symbol (staged)
@@ -66,11 +66,11 @@ git_prompt_info() {
     behind=$(echo $counts | awk '{print $2}')
     
     if [[ $ahead -gt 0 && $behind -gt 0 ]]; then
-      sync_status="${DIVERGED_ICON}${ahead}/${behind}"
+      sync_status="${DIVERGED_ICON} ${ahead}/${behind}"
     elif [[ $ahead -gt 0 ]]; then
-      sync_status="${AHEAD_ICON}${ahead}"
+      sync_status="${AHEAD_ICON} ${ahead}"
     elif [[ $behind -gt 0 ]]; then
-      sync_status="${BEHIND_ICON}${behind}"
+      sync_status="${BEHIND_ICON} ${behind}"
     fi
     # Removed the else clause that showed sync icon for up-to-date repos
   fi
