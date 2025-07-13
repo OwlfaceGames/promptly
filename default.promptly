@@ -7,6 +7,9 @@ setopt prompt_subst
 PROMPT_CHAR="❯"
 
 # Define Nerd Font symbols with explicit Unicode values
+AHEAD_ICON=$'\uf176'     # Arrow up (ahead)
+BEHIND_ICON=$'\uf175'    # Arrow down (behind)
+DIVERGED_ICON=$'\uf7a5'  # Up/down arrows (diverged)
 STAGED_ICON=$'+'         # Plus symbol (staged)
 UNSTAGED_ICON=$'!'       # Exclamation symbol (unstaged)
 UNTRACKED_ICON=$'?'      # Question mark symbol (untracked)
@@ -46,6 +49,22 @@ git_prompt_info() {
   # GitHub text if applicable
   [[ "$remote_url" == *github.com* || "$upstream_url" == *github.com* ]] && host_text="github"
 
+  # Determine sync (ahead/behind) info - removed sync icon for up-to-date repos
+  local ahead behind sync_status=""
+  if git rev-parse --abbrev-ref @{u} > /dev/null 2>&1; then
+    local counts=$(git rev-list --left-right --count HEAD...@{u} 2>/dev/null)
+    ahead=$(echo $counts | awk '{print $1}')
+    behind=$(echo $counts | awk '{print $2}')
+    
+    if [[ $ahead -gt 0 && $behind -gt 0 ]]; then
+      sync_status="${DIVERGED_ICON} ${ahead}/${behind}"
+    elif [[ $ahead -gt 0 ]]; then
+      sync_status="${AHEAD_ICON} ${ahead}"
+    elif [[ $behind -gt 0 ]]; then
+      sync_status="${BEHIND_ICON} ${behind}"
+    fi
+  fi
+
   # Prepare status indicators with icons (no spaces between icon and number)
   local staged_status=""
   local unstaged_status=""
@@ -57,8 +76,8 @@ git_prompt_info() {
   [[ $untracked -gt 0 ]] && untracked_status="${UNTRACKED_ICON}${untracked}"
   [[ $stashed -gt 0 ]] && stashed_status="${STASHED_ICON}${stashed}"
 
-  # Return the git segment info WITHOUT sync status
-  echo "${host_text}|${branch}|${staged_status}|${unstaged_status}|${untracked_status}|${stashed_status}"
+  # Return the git segment info WITH sync status
+  echo "${host_text}|${branch}|${sync_status}|${staged_status}|${unstaged_status}|${untracked_status}|${stashed_status}"
 }
 
 # ─────────────────────────────────────────────────────────────
@@ -86,19 +105,36 @@ build_prompt() {
     local git_parts=(${(s:|:)GIT_INFO})
     local host_text=${git_parts[1]}
     local branch=${git_parts[2]}
-    local staged_status=${git_parts[3]}
-    local unstaged_status=${git_parts[4]}
-    local untracked_status=${git_parts[5]}
-    local stashed_status=${git_parts[6]}
+    local sync_status=${git_parts[3]}
+    local staged_status=${git_parts[4]}
+    local unstaged_status=${git_parts[5]}
+    local untracked_status=${git_parts[6]}
+    local stashed_status=${git_parts[7]}
     
-    # Use bright blue for git/github/parentheses and bright magenta for branch
+    # Build git segment with explicit color boundaries
     PROMPT+=" %F{blue}${host_text}(%F{013}${branch}%F{blue})%f"
     
-    # Add status indicators with their distinct colors (changed stashed to white)
-    [[ -n "$staged_status" ]] && PROMPT+=" %F{green}${staged_status}%f"
-    [[ -n "$unstaged_status" ]] && PROMPT+=" %F{yellow}${unstaged_status}%f"
-    [[ -n "$untracked_status" ]] && PROMPT+=" %F{red}${untracked_status}%f"
-    [[ -n "$stashed_status" ]] && PROMPT+=" %F{white}${stashed_status}%f"
+    # Add sync status with cyan color (unique from everything else)
+    if [[ -n "$sync_status" ]]; then
+      PROMPT+=" %F{cyan}${sync_status}%f"
+    fi
+    
+    # Add status indicators with explicit color wrapping
+    if [[ -n "$staged_status" ]]; then
+      PROMPT+=" %F{green}${staged_status}%f"
+    fi
+    
+    if [[ -n "$unstaged_status" ]]; then
+      PROMPT+=" %F{yellow}${unstaged_status}%f"
+    fi
+    
+    if [[ -n "$untracked_status" ]]; then
+      PROMPT+=" %F{red}${untracked_status}%f"
+    fi
+    
+    if [[ -n "$stashed_status" ]]; then
+      PROMPT+=" %F{white}${stashed_status}%f"
+    fi
   fi
   
   # Add newline and lambda prompt character for the second line
