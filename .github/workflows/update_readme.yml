@@ -1,8 +1,8 @@
-name: Update README with zshrc
+name: Update README with default.promptly
 on:
   push:
     paths: 
-      - 'zshrc'
+      - 'default.promptly'
       - 'README.md'
     branches:
       - master
@@ -19,11 +19,11 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Update README with zshrc content
+      - name: Update README with default.promptly content
         run: |
           awk '
-          /<!-- START:zshrc -->/ { print; print "```zsh"; system("cat zshrc"); print "```"; f=1; next }
-          /<!-- END:zshrc -->/ { f=0 }
+          /<!-- START:default.promptly -->/ { print; print "```zsh"; system("cat default.promptly"); print "```"; f=1; next }
+          /<!-- END:default.promptly -->/ { f=0 }
           !f
           ' README.md > README.tmp && mv README.tmp README.md
 
@@ -42,5 +42,5 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add README.md
-          git commit -m "Auto-update README with latest zshrc content"
+          git commit -m "Auto-update README with latest default.promptly content"
           git push

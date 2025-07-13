@@ -6,7 +6,7 @@ A simple, minimalist and performant zsh prompt. I found it really annoying tryin
 ## Usage
 Just copy and paste it at the end of your zshrc file.
 
-<!-- START:zshrc -->
+<!-- START:default.promptly -->
 ```zsh
 ```
-<!-- END:zshrc -->
+<!-- END:default.promptly -->
