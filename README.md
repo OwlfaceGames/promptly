@@ -13,7 +13,14 @@ A simple, minimalist and performant zsh prompt. I found it really annoying tryin
 gh repo clone owlfacegames/promptly
 ```
 ### Source desired prompt config in your .zshrc file
+#### Default
 ```zsh
 # load promptly
 source $HOME/promptly/default.promptly
+```
+
+#### Icons
+```zsh
+# load promptly
+source $HOME/promptly/icons.promptly
 ```
