@@ -4,9 +4,11 @@ A simple, minimalist and performant zsh prompt. I found it really annoying tryin
 ![promptly image](promptly.png)
 
 ## Usage
-- Clone repo with "gh repo clone owlfacegames/promptly".
-- Source desired prompt config in your .zshrc file (see example below).
-
+### Clone repo 
+```zsh
+gh repo clone owlfacegames/promptly
+```
+### Source desired prompt config in your .zshrc file
 ```zsh
 # load promptly
 source $HOME/promptly/default.promptly
