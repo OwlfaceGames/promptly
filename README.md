@@ -13,7 +13,7 @@ setopt prompt_subst
 # ─────────────────────────────────────────────────────────────
 # Lambda prompt character
 # ─────────────────────────────────────────────────────────────
-PROMPT_CHAR="λ"
+PROMPT_CHAR="❯"
 
 # Define Nerd Font symbols with explicit Unicode values
 GIT_ICON=$'\uf1d3'       # Git logo
