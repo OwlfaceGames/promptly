@@ -5,7 +5,10 @@ on:
       - 'zshrc'
       - 'README.md'
     branches:
-      - master
+      - main
+
+permissions:
+  contents: write  # This gives the workflow permission to push changes
 
 jobs:
   update-readme:
@@ -18,7 +21,6 @@ jobs:
 
       - name: Update README with zshrc content
         run: |
-          # Create temporary file with new content
           awk '
           /<!-- START:zshrc -->/ { print; print "```zsh"; system("cat zshrc"); print "```"; f=1; next }
           /<!-- END:zshrc -->/ { f=0 }
