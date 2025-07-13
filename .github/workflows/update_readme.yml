@@ -20,7 +20,7 @@ jobs:
         run: |
           # Create temporary file with new content
           awk '
-          /<!-- START:zshrc -->/ { print; print "```zsh"; system("cat .zshrc"); print "```"; f=1; next }
+          /<!-- START:zshrc -->/ { print; print "```zsh"; system("cat zshrc"); print "```"; f=1; next }
           /<!-- END:zshrc -->/ { f=0 }
           !f
           ' README.md > README.tmp && mv README.tmp README.md
@@ -40,5 +40,5 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add README.md
-          git commit -m "Auto-update README with latest .zshrc content"
+          git commit -m "Auto-update README with latest zshrc content"
           git push
