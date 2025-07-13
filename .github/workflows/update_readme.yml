@@ -1,0 +1,44 @@
+name: Update README with zshrc
+on:
+  push:
+    paths: 
+      - 'zshrc'
+      - 'README.md'
+    branches:
+      - master
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update README with zshrc content
+        run: |
+          # Create temporary file with new content
+          awk '
+          /<!-- START:zshrc -->/ { print; print "```zsh"; system("cat .zshrc"); print "```"; f=1; next }
+          /<!-- END:zshrc -->/ { f=0 }
+          !f
+          ' README.md > README.tmp && mv README.tmp README.md
+
+      - name: Check for changes
+        id: verify-changed-files
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit changes
+        if: steps.verify-changed-files.outputs.changed == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add README.md
+          git commit -m "Auto-update README with latest .zshrc content"
+          git push
