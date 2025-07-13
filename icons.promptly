@@ -51,12 +51,6 @@ git_prompt_info() {
   
   # GitHub icon if applicable
   [[ "$remote_url" == *github.com* || "$upstream_url" == *github.com* ]] && host_icon="$GITHUB_ICON"
-  
-  # Determine text color based on git status
-  local git_color="green"
-  if [[ $((staged + unstaged + untracked + stashed)) -gt 0 ]]; then
-    git_color="red"
-  fi
 
   # Determine sync (ahead/behind) info - removed sync icon for up-to-date repos
   local ahead behind sync_status=""
@@ -72,7 +66,6 @@ git_prompt_info() {
     elif [[ $behind -gt 0 ]]; then
       sync_status="${BEHIND_ICON} ${behind}"
     fi
-    # Removed the else clause that showed sync icon for up-to-date repos
   fi
 
   # Prepare status indicators with icons (no spaces between icon and number)
@@ -87,7 +80,7 @@ git_prompt_info() {
   [[ $stashed -gt 0 ]] && stashed_status="${STASHED_ICON}${stashed}"
 
   # Return the git segment info for use in the prompt
-  echo "${git_color}|${host_icon}|${BRANCH_ICON}|${branch}|${sync_status}|${staged_status}|${unstaged_status}|${untracked_status}|${stashed_status}"
+  echo "${host_icon}|${BRANCH_ICON}|${branch}|${sync_status}|${staged_status}|${unstaged_status}|${untracked_status}|${stashed_status}"
 }
 
 # ─────────────────────────────────────────────────────────────
@@ -113,30 +106,39 @@ build_prompt() {
   # Git segment if available
   if [[ -n "$GIT_INFO" ]]; then
     local git_parts=(${(s:|:)GIT_INFO})
-    local git_color=${git_parts[1]}
-    local host_icon=${git_parts[2]}
-    local branch_icon=${git_parts[3]}
-    local branch=${git_parts[4]}
-    local sync_status=${git_parts[5]}
-    local staged_status=${git_parts[6]}
-    local unstaged_status=${git_parts[7]}
-    local untracked_status=${git_parts[8]}
-    local stashed_status=${git_parts[9]}
+    local host_icon=${git_parts[1]}
+    local branch_icon=${git_parts[2]}
+    local branch=${git_parts[3]}
+    local sync_status=${git_parts[4]}
+    local staged_status=${git_parts[5]}
+    local unstaged_status=${git_parts[6]}
+    local untracked_status=${git_parts[7]}
+    local stashed_status=${git_parts[8]}
     
-    # Add separator and start git segment
-    PROMPT+=" %F{white}on%f %F{$git_color}${host_icon} ${branch_icon} ${branch}"
+    # Add separator and start git segment with stable colors
+    PROMPT+=" %F{white}on%f %F{blue}${host_icon} ${branch_icon} %F{013}${branch}%F{blue}%f"
     
-    # Add sync status if available (no extra space since it's already formatted)
-    [[ -n "$sync_status" ]] && PROMPT+=" ${sync_status}"
+    # Add sync status with cyan color (unique from everything else)
+    if [[ -n "$sync_status" ]]; then
+      PROMPT+=" %F{cyan}${sync_status}%f"
+    fi
     
-    # Add status indicators if available (in different colors for clarity)
-    [[ -n "$staged_status" ]] && PROMPT+=" %F{green}${staged_status}%f"
-    [[ -n "$unstaged_status" ]] && PROMPT+=" %F{yellow}${unstaged_status}%f"
-    [[ -n "$untracked_status" ]] && PROMPT+=" %F{red}${untracked_status}%f"
-    [[ -n "$stashed_status" ]] && PROMPT+=" %F{blue}${stashed_status}%f"
+    # Add status indicators with explicit color wrapping
+    if [[ -n "$staged_status" ]]; then
+      PROMPT+=" %F{green}${staged_status}%f"
+    fi
     
-    # End git segment
-    PROMPT+="%f"
+    if [[ -n "$unstaged_status" ]]; then
+      PROMPT+=" %F{yellow}${unstaged_status}%f"
+    fi
+    
+    if [[ -n "$untracked_status" ]]; then
+      PROMPT+=" %F{red}${untracked_status}%f"
+    fi
+    
+    if [[ -n "$stashed_status" ]]; then
+      PROMPT+=" %F{white}${stashed_status}%f"
+    fi
   fi
   
   # Add newline and lambda prompt character for the second line
