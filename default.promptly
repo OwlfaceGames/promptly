@@ -91,14 +91,14 @@ build_prompt() {
     local untracked_status=${git_parts[5]}
     local stashed_status=${git_parts[6]}
     
-    # Build git segment exactly like the working test
-    PROMPT+=" %F{blue}${host_text}(%F{yellow}${branch}%F{blue})%f"
+    # Use bright blue for git/github/parentheses and bright magenta for branch
+    PROMPT+=" %F{blue}${host_text}(%F{013}${branch}%F{blue})%f"
     
-    # Add status indicators with explicit color wrapping
+    # Add status indicators with their distinct colors (changed stashed to white)
     [[ -n "$staged_status" ]] && PROMPT+=" %F{green}${staged_status}%f"
     [[ -n "$unstaged_status" ]] && PROMPT+=" %F{yellow}${unstaged_status}%f"
     [[ -n "$untracked_status" ]] && PROMPT+=" %F{red}${untracked_status}%f"
-    [[ -n "$stashed_status" ]] && PROMPT+=" %F{magenta}${stashed_status}%f"
+    [[ -n "$stashed_status" ]] && PROMPT+=" %F{white}${stashed_status}%f"
   fi
   
   # Add newline and lambda prompt character for the second line
