@@ -7,9 +7,6 @@ setopt prompt_subst
 PROMPT_CHAR="❯"
 
 # Define Nerd Font symbols with explicit Unicode values
-GIT_ICON=$'\uf1d3'       # Git logo
-GITHUB_ICON=$'\uf408'    # GitHub logo
-BRANCH_ICON=$'\uf418'    # Branch icon
 AHEAD_ICON=$'\uf176'     # Arrow up (ahead)
 BEHIND_ICON=$'\uf175'    # Arrow down (behind)
 DIVERGED_ICON=$'\uf7a5'  # Up/down arrows (diverged)
@@ -19,7 +16,7 @@ UNTRACKED_ICON=$'?'      # Question mark symbol (untracked)
 STASHED_ICON=$'$'        # Archive/box symbol (stashed)
 
 # ─────────────────────────────────────────────────────────────
-# Git info function with Nerd Font icons and sync status
+# Git info function with text labels instead of icons
 # ─────────────────────────────────────────────────────────────
 git_prompt_info() {
   git rev-parse --git-dir > /dev/null 2>&1 || return
@@ -46,16 +43,22 @@ git_prompt_info() {
   local remote_url=$(git config --get remote.origin.url 2>/dev/null)
   local upstream_url=$(git config --get remote.upstream.url 2>/dev/null)
   
-  # Default Git icon
-  local host_icon="$GIT_ICON"
+  # Default Git text
+  local host_text="git"
   
-  # GitHub icon if applicable
-  [[ "$remote_url" == *github.com* || "$upstream_url" == *github.com* ]] && host_icon="$GITHUB_ICON"
+  # GitHub text if applicable
+  [[ "$remote_url" == *github.com* || "$upstream_url" == *github.com* ]] && host_text="github"
   
-  # Determine text color based on git status
+  # Determine main git color (for git/github text and parentheses)
   local git_color="green"
   if [[ $((staged + unstaged + untracked + stashed)) -gt 0 ]]; then
     git_color="red"
+  fi
+  
+  # Determine branch color (different from main git color)
+  local branch_color="yellow"
+  if [[ $((staged + unstaged + untracked + stashed)) -gt 0 ]]; then
+    branch_color="magenta"
   fi
 
   # Determine sync (ahead/behind) info - removed sync icon for up-to-date repos
@@ -87,7 +90,7 @@ git_prompt_info() {
   [[ $stashed -gt 0 ]] && stashed_status="${STASHED_ICON}${stashed}"
 
   # Return the git segment info for use in the prompt
-  echo "${git_color}|${host_icon}|${BRANCH_ICON}|${branch}|${sync_status}|${staged_status}|${unstaged_status}|${untracked_status}|${stashed_status}"
+  echo "${git_color}|${branch_color}|${host_text}|${branch}|${sync_status}|${staged_status}|${unstaged_status}|${untracked_status}|${stashed_status}"
 }
 
 # ─────────────────────────────────────────────────────────────
@@ -114,8 +117,8 @@ build_prompt() {
   if [[ -n "$GIT_INFO" ]]; then
     local git_parts=(${(s:|:)GIT_INFO})
     local git_color=${git_parts[1]}
-    local host_icon=${git_parts[2]}
-    local branch_icon=${git_parts[3]}
+    local branch_color=${git_parts[2]}
+    local host_text=${git_parts[3]}
     local branch=${git_parts[4]}
     local sync_status=${git_parts[5]}
     local staged_status=${git_parts[6]}
@@ -123,8 +126,8 @@ build_prompt() {
     local untracked_status=${git_parts[8]}
     local stashed_status=${git_parts[9]}
     
-    # Add separator and start git segment
-    PROMPT+=" %F{white}on%f %F{$git_color}${host_icon} ${branch_icon} ${branch}"
+    # Add git segment with separate colors for git/parentheses and branch
+    PROMPT+=" %F{$git_color}${host_text}(%F{$branch_color}${branch}%F{$git_color})"
     
     # Add sync status if available (no extra space since it's already formatted)
     [[ -n "$sync_status" ]] && PROMPT+=" ${sync_status}"
