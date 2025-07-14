@@ -191,6 +191,7 @@ func updateZshrc(zshrcPath string) error {
 	if len(lines) > 0 && lines[len(lines)-1] != "" {
 		lines = append(lines, "")
 	}
+	lines = append(lines, "# Promptly - Custom shell prompt theme")
 	lines = append(lines, sourceCmd)
 
 	file.Seek(0, 0)
