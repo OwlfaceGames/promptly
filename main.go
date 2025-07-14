@@ -107,8 +107,10 @@ func generatePreview(name, content string) string {
 			color.New(color.FgYellow).Sprint("!1") + " " +
 			color.New(color.FgRed).Sprint("?3")
 	case "icons":
+		gitIcon := "\uf1d3"       // Same as GIT_ICON in icons.promptly
+		branchIcon := "\uf418"    // Same as BRANCH_ICON in icons.promptly
 		preview += color.New(color.FgWhite).Sprint("on") + " " +
-			color.New(color.FgBlue).Sprint("󰊢  ") + " " +
+			color.New(color.FgBlue).Sprint(gitIcon + " " + branchIcon + " ") +
 			color.New(color.FgMagenta).Sprint("main") + " " +
 			color.New(color.FgGreen).Sprint("+2") + " " +
 			color.New(color.FgYellow).Sprint("!1") + " " +
