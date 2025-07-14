@@ -153,9 +153,9 @@ func installTheme(theme Theme) error {
 		return fmt.Errorf("failed to get home directory: %w", err)
 	}
 
-	promptlyPath := filepath.Join(homeDir, ".promptly")
+	promptlyPath := filepath.Join(homeDir, ".promptly.zsh")
 	if err := os.WriteFile(promptlyPath, []byte(theme.Content), 0644); err != nil {
-		return fmt.Errorf("failed to write .promptly file: %w", err)
+		return fmt.Errorf("failed to write .promptly.zsh file: %w", err)
 	}
 
 	zshrcPath := filepath.Join(homeDir, ".zshrc")
@@ -167,7 +167,7 @@ func installTheme(theme Theme) error {
 }
 
 func updateZshrc(zshrcPath string) error {
-	sourceCmd := "source ~/.promptly"
+	sourceCmd := "source ~/.promptly.zsh"
 	
 	file, err := os.OpenFile(zshrcPath, os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
