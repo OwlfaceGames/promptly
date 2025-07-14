@@ -33,6 +33,8 @@ Then run:
 promptly
 ```
 
+![Installer interface](installer.png)
+
 Use arrow keys to preview themes, press Enter to install. Restart your terminal to see changes.
 
 ## What it does
