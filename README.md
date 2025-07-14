@@ -40,10 +40,6 @@ Use arrow keys to preview themes, press Enter to install. Restart your terminal 
 3. ⚙️ Adds `source ~/.promptly.zsh` to your `.zshrc`
 4. ✅ Ready to use immediately
 
-## Manual Installation
-
-Download the binary for your platform from [releases](https://github.com/owlfacegames/promptly/releases):
-
 ```bash
 # Make executable and move to PATH
 chmod +x promptly-*
@@ -56,17 +52,6 @@ sudo mv promptly-* /usr/local/bin/promptly
 - **curl** (for installer)
 - **Nerd Font** (for icons theme) - [Install here](https://www.nerdfonts.com/)
 
-## Git Status Indicators
-
-| Symbol | Meaning |
-|--------|---------|
-| `+2` | 2 staged files |
-| `!1` | 1 modified file |
-| `?3` | 3 untracked files |
-| `$1` | 1 stashed change |
-| `↑2` | 2 commits ahead |
-| `↓1` | 1 commit behind |
-
 ## Uninstall
 
 Remove from `.zshrc`:
@@ -74,7 +59,3 @@ Remove from `.zshrc`:
 # Delete this line from ~/.zshrc
 source ~/.promptly.zsh
 ```
-
-## License
-
-MIT License - see [LICENSE](LICENSE) file.
