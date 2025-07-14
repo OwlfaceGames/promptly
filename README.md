@@ -1,14 +1,14 @@
-# Promptly 🎨
+# Promptly
 
 A fast, minimalist Zsh prompt with an interactive installer. Choose your style, install instantly.
 
 ## Features
 
-✨ **Interactive installer** - Preview themes before installing  
-⚡ **High performance** - Optimized Git status parsing  
-🎨 **Multiple themes** - Text-based and icon variants  
-🔧 **Zero configuration** - Auto-installs and configures  
-🌍 **Cross-platform** - Works on Linux, macOS, and Windows  
+**Interactive installer** - Preview themes before installing  
+**High performance** - Optimized Git status parsing  
+**Multiple themes** - Text-based and icon variants  
+**Zero configuration** - Auto-installs and configures  
+**Cross-platform** - Works on Linux, macOS, and Windows  
 
 ## Themes
 
@@ -39,10 +39,10 @@ Use arrow keys to preview themes, press Enter to install. Restart your terminal 
 
 ## What it does
 
-1. 🎯 Shows interactive theme selector with live previews
-2. 📁 Installs chosen theme to `~/.promptly.zsh`  
-3. ⚙️ Adds `source ~/.promptly.zsh` to your `.zshrc`
-4. ✅ Ready to use immediately
+1. Shows interactive theme selector with live previews
+2. Installs chosen theme to `~/.promptly.zsh`  
+3. Adds `source ~/.promptly.zsh` to your `.zshrc`
+4. Ready to use immediately
 
 ```bash
 # Make executable and move to PATH
