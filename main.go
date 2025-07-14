@@ -108,7 +108,7 @@ func generatePreview(name, content string) string {
 			color.New(color.FgRed).Sprint("?3")
 	case "icons":
 		preview += color.New(color.FgWhite).Sprint("on") + " " +
-			color.New(color.FgBlue).Sprint("  ") + " " +
+			color.New(color.FgBlue).Sprint("󰊢  ") + " " +
 			color.New(color.FgMagenta).Sprint("main") + " " +
 			color.New(color.FgGreen).Sprint("+2") + " " +
 			color.New(color.FgYellow).Sprint("!1") + " " +
