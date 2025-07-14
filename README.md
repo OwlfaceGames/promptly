@@ -5,6 +5,7 @@ A fast, minimalist Zsh prompt with an interactive installer. Choose your style, 
 ## Features
 
 **Interactive installer** - Preview themes before installing  
+**Custom theme creation** - Create and manage your own themes  
 **High performance** - Optimized Git status parsing  
 **Multiple themes** - Text-based and icon variants  
 **Zero configuration** - Auto-installs and configures  
@@ -22,6 +23,13 @@ Clean, readable prompt with Git status indicators using text symbols.
 
 Beautiful icons with enhanced Git visualization (requires Nerd Font).
 
+### Custom Themes
+
+Create your own themes based on existing templates. Choose "Create Custom" in the installer to:
+- Build custom themes from default or icons base
+- Store themes in `~/.config/promptly/` 
+- Automatically load custom themes alongside built-in options
+
 ## Quick Install
 
 ```bash
@@ -35,7 +43,7 @@ promptly
 
 ![Installer interface](installer.png)
 
-Use arrow keys to preview themes, press Enter to install. Restart your terminal to see changes.
+Use arrow keys to preview themes, select "Create Custom" to make your own, press Enter to install. Restart your terminal to see changes.
 
 ## What it does
 
