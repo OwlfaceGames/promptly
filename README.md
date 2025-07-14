@@ -14,10 +14,12 @@ A fast, minimalist Zsh prompt with an interactive installer. Choose your style, 
 
 ### Default - Clean Text
 ![Default prompt](default.png)
+
 Clean, readable prompt with Git status indicators using text symbols.
 
 ### Icons - Nerd Font Enhanced  
 ![Icons prompt](icons.png)
+
 Beautiful icons with enhanced Git visualization (requires Nerd Font).
 
 ## Quick Install
