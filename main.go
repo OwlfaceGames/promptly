@@ -13,7 +13,7 @@ import (
 	"github.com/manifoldco/promptui"
 )
 
-//go:embed *.promptly
+//go:embed *.promptly.zsh
 var promptFiles embed.FS
 
 type Theme struct {
@@ -58,7 +58,7 @@ func loadThemes() ([]Theme, error) {
 			return err
 		}
 
-		if !strings.HasSuffix(path, ".promptly") {
+		if !strings.HasSuffix(path, ".promptly.zsh") {
 			return nil
 		}
 
@@ -67,7 +67,7 @@ func loadThemes() ([]Theme, error) {
 			return err
 		}
 
-		name := strings.TrimSuffix(filepath.Base(path), ".promptly")
+		name := strings.TrimSuffix(filepath.Base(path), ".promptly.zsh")
 		description := getThemeDescription(name)
 		preview := generatePreview(name, string(content))
 
