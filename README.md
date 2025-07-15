@@ -52,12 +52,6 @@ Use arrow keys to preview themes, select "Create Custom" to make your own, press
 3. Adds `source ~/.promptly.zsh` to your `.zshrc`
 4. Ready to use immediately
 
-```bash
-# Make executable and move to PATH
-chmod +x promptly-*
-sudo mv promptly-* /usr/local/bin/promptly
-```
-
 ## Requirements
 
 - **Zsh shell**
