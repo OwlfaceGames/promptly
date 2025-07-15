@@ -1,6 +1,6 @@
 # Promptly
 
-A fast, minimalist Zsh prompt with an interactive installer. Choose your style, install instantly.
+A fast, minimalist Zsh prompt with an interactive installer. Choose your style, install instantly. Create custom themes based on existing ones. Switch between themes instantly.
 
 ## Features
 
