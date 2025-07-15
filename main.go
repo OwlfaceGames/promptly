@@ -115,6 +115,8 @@ func getThemeDescription(name string) string {
 		return "Clean text-based prompt with git status"
 	case "icons":
 		return "Nerd Font icons with enhanced git visualization"
+	case "semicolon":
+		return "ASCII-only prompt with semicolon prompt character"
 	default:
 		return "Custom promptly theme"
 	}
@@ -145,12 +147,25 @@ func generatePreview(name, content string) string {
 			color.New(color.FgGreen).Sprint("+2") + " " +
 			color.New(color.FgYellow).Sprint("!1") + " " +
 			color.New(color.FgRed).Sprint("?3")
+	case "semicolon":
+		preview += color.New(color.FgWhite).Sprint("git(") + 
+			color.New(color.FgMagenta).Sprint("main") + 
+			color.New(color.FgWhite).Sprint(")") + " " +
+			color.New(color.FgGreen).Sprint("+2") + " " +
+			color.New(color.FgYellow).Sprint("!1") + " " +
+			color.New(color.FgRed).Sprint("?3")
 	default:
 		// For any other custom themes found in config
 		return "Preview not available for custom themes"
 	}
 	
-	preview += "\n" + color.New(color.FgBlue).Sprint("❯") + " "
+	
+	switch name {
+	case "semicolon":
+		preview += "\n" + color.New(color.FgBlue).Sprint(";") + " "
+	default:
+		preview += "\n" + color.New(color.FgBlue).Sprint("❯") + " "
+	}
 	return preview
 }
 
