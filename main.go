@@ -117,6 +117,8 @@ func getThemeDescription(name string) string {
 		return "Nerd Font icons with enhanced git visualization"
 	case "semicolon":
 		return "ASCII-only prompt with semicolon prompt character"
+	case "melange":
+		return "Warm color palette inspired by the Melange Neovim theme"
 	default:
 		return "Custom promptly theme"
 	}
@@ -128,7 +130,12 @@ func generatePreview(name, content string) string {
 		return "Preview not available for custom themes"
 	}
 
-	preview := color.New(color.FgCyan).Sprint("~/projects/myapp") + " "
+	var preview string
+	if name == "melange" {
+		preview = "\033[38;2;193;167;142m~/projects/myapp\033[0m" + " "  // #C1A78E melange warm
+	} else {
+		preview = color.New(color.FgCyan).Sprint("~/projects/myapp") + " "
+	}
 	
 	switch name {
 	case "default":
@@ -154,6 +161,18 @@ func generatePreview(name, content string) string {
 			color.New(color.FgGreen).Sprint("+2") + " " +
 			color.New(color.FgYellow).Sprint("!1") + " " +
 			color.New(color.FgRed).Sprint("?3")
+	case "melange":
+		gitIcon := "\uf408"       // GitHub icon from melange theme
+		branchIcon := "\ue725"    // Branch icon from melange theme
+		aheadIcon := "⇡"          // Ahead icon from melange theme
+		// Using closest standard colors to melange palette
+		preview += "\033[38;2;134;116;98mon\033[0m" + " " +  // #867462 warm gray
+			"\033[38;2;137;179;182m" + gitIcon + " " + branchIcon + " \033[0m" +  // #89B3B6 melange cyan
+			"\033[38;2;163;169;206mmain\033[0m" + " " +  // #A3A9CE melange purple
+			"\033[38;2;137;179;182m" + aheadIcon + "1\033[0m" + " " +  // #89B3B6 melange cyan - no space between icon and number
+			"\033[38;2;133;182;149m+2\033[0m" + " " +   // #85B695 melange green
+			"\033[38;2;235;192;109m!1\033[0m" + " " +   // #EBC06D melange yellow
+			"\033[38;2;212;119;102m?3\033[0m"           // #D47766 melange red
 	default:
 		// For any other custom themes found in config
 		return "Preview not available for custom themes"
@@ -163,6 +182,8 @@ func generatePreview(name, content string) string {
 	switch name {
 	case "semicolon":
 		preview += "\n" + color.New(color.FgBlue).Sprint(";") + " "
+	case "melange":
+		preview += "\n" + "\033[38;2;137;179;182m;\033[0m" + " "  // #89B3B6 melange cyan
 	default:
 		preview += "\n" + color.New(color.FgBlue).Sprint("❯") + " "
 	}
