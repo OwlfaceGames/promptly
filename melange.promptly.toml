@@ -1,0 +1,99 @@
+# melange.promptly.toml
+# Warm color palette inspired by the Melange Neovim theme
+#
+# Palette reference (matches melange.promptly.zsh):
+#   #C1A78E  warm sand    — directory
+#   #867462  warm gray    — "on" separator
+#   #89B3B6  muted teal   — git icons, sync status, prompt char
+#   #A3A9CE  soft lavender — branch name
+#   #85B695  sage green   — staged
+#   #EBC06D  warm amber   — unstaged / modified
+#   #D47766  terracotta   — untracked
+#   #CF9BC2  mauve        — stashed
+
+# ─────────────────────────────────────────────────────────────
+# Global
+# ─────────────────────────────────────────────────────────────
+format = """
+$directory\
+$git_branch\
+$git_status\
+$git_metrics\
+$line_break\
+$character"""
+
+add_newline = true
+
+# ─────────────────────────────────────────────────────────────
+# Directory  (#C1A78E warm sand)
+# ─────────────────────────────────────────────────────────────
+[directory]
+style            = "#C1A78E"
+format           = "[$path]($style) "
+truncation_length = 3
+truncate_to_repo  = false
+
+# ─────────────────────────────────────────────────────────────
+# Git branch  (icons + colors matching the zsh theme)
+# ─────────────────────────────────────────────────────────────
+[git_branch]
+# "on  <github-icon> <branch-icon> <branch>" in melange colors
+format   = "[on](#867462) [ $symbol$branch]($style) "
+symbol   = "\uf408 \ue725 "   # GitHub icon + branch icon (Nerd Font)
+style    = "#89B3B6"          # muted teal for icons; branch name below
+# Branch name gets its own color via git_state / we use a workaround:
+# starship renders the whole format in `style`, so icons + name are teal.
+# To match the zsh theme more closely (purple branch name) use the
+# git_branch.format trick below — replace with this if your starship ≥ v1.9:
+# format = "[on](#867462) [\uf408 \ue725 ](#89B3B6)[$branch](#A3A9CE) "
+
+# ─────────────────────────────────────────────────────────────
+# Git status — staged / unstaged / untracked / stashed / ahead-behind
+# (icons and order match melange.promptly.zsh)
+# ─────────────────────────────────────────────────────────────
+[git_status]
+format    = "[$ahead_behind$staged$modified$untracked$stashed]($style)"
+style     = "bold"   # per-symbol styles override below
+
+# Ahead / behind / diverged  (#89B3B6 muted teal)
+ahead    = "[⇡$count](#89B3B6) "
+behind   = "[⇣$count](#89B3B6) "
+diverged = "[⇕$ahead_count/$behind_count](#89B3B6) "
+
+# Staged  (+N  sage green)
+staged   = "[+$count](#85B695) "
+
+# Unstaged / modified  (!N  warm amber)
+modified = "[!$count](#EBC06D) "
+
+# Untracked  (?N  terracotta)
+untracked = "[?$count](#D47766) "
+
+# Stashed  ($N  mauve)
+stashed  = "[$$$count](#CF9BC2) "
+
+# Starship shows nothing when clean — matches the zsh theme behaviour
+[git_metrics]
+disabled = true   # we use git_status counts instead
+
+# ─────────────────────────────────────────────────────────────
+# Prompt character  (;  in #89B3B6 muted teal, matching the zsh theme)
+# ─────────────────────────────────────────────────────────────
+[character]
+success_symbol = "[;](#89B3B6)"
+error_symbol   = "[;](#D47766)"   # terracotta on error
+
+# ─────────────────────────────────────────────────────────────
+# Disable modules not used by this theme
+# ─────────────────────────────────────────────────────────────
+[username]
+disabled = true
+
+[hostname]
+disabled = true
+
+[cmd_duration]
+disabled = true
+
+[package]
+disabled = true
