@@ -1,6 +1,6 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
-format = "$directory${custom.gitsource}$git_branch$git_status$line_break$character"
+format = "$directory${custom.gitsource}$git_branch$git_status$all$line_break$character"
 
 # ─────────────────────────────────────────────────────────────
 # Prompt character
@@ -89,7 +89,7 @@ style      = "#A3A9CE"
 tag_symbol = '  '
 
 [git_status]
-format    = "([$ahead_behind$staged$modified$untracked$stashed]($style) )"
+format = "([$ahead_behind$staged$modified$untracked$stashed]($style))"
 style     = "bold"
 ahead     = "[⇡$count](#89B3B6) "
 behind    = "[⇣$count](#89B3B6) "
