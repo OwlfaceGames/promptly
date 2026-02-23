@@ -72,15 +72,15 @@ style  = "#A3A9CE"
 [custom.gitsource]
 use_stdin = false
 command = """
-remote=$(git remote get-url upstream 2>/dev/null || git remote get-url origin 2>/dev/null)
-if echo "$remote" | grep -q "github.com"; then
-  printf ''
+set remote (git remote get-url upstream 2>/dev/null; or git remote get-url origin 2>/dev/null)
+if string match -q "*github.com*" $remote
+  echo ""
 else
-  printf '\uf1d3'
-fi
+  echo "\uf1d3"
+end
 """
-when = "git rev-parse --is-inside-work-tree 2>/dev/null"
-shell = ["bash", "-c"]
+when = "git rev-parse --is-inside-work-tree"
+shell = ["fish", "--command"]
 format = "[on](#867462) [$output ]($style)"
 style = "#A3A9CE"
 
