@@ -1,5 +1,12 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
+# ─────────────────────────────────────────────────────────────
+# Prompt character
+# ─────────────────────────────────────────────────────────────
+[character]
+success_symbol = "[;](#89B3B6)"
+error_symbol   = "[;](#D47766)"
+
 [aws]
 symbol = " "
 
@@ -31,6 +38,7 @@ symbol = " "
 symbol = " "
 
 [directory]
+style     = "#C1A78E"
 read_only = " 󰌾"
 
 [docker_context]
@@ -56,9 +64,23 @@ symbol = " "
 
 [git_branch]
 symbol = " "
+format = "[on](#867462) [$symbol$branch ]($style)"
+style  = "#A3A9CE"
 
 [git_commit]
+style      = "#A3A9CE"
 tag_symbol = '  '
+
+[git_status]
+format    = "([$ahead_behind$staged$modified$untracked$stashed]($style) )"
+style     = "bold"
+ahead     = "[⇡$count](#89B3B6)"
+behind    = "[⇣$count](#89B3B6)"
+diverged  = "[⇕$ahead_count/$behind_count](#89B3B6)"
+staged    = "[+$count](#85B695)"
+modified  = "[!$count](#EBC06D)"
+untracked = "[?$count](#D47766)"
+stashed   = "[$$$count](#CF9BC2)"
 
 [golang]
 symbol = " "
