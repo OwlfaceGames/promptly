@@ -1,6 +1,8 @@
 # Promptly
 
-A fast, minimalist Zsh prompt with an interactive installer. Choose your style, install instantly. Create custom themes based on existing ones. Switch between themes instantly.
+A fast, minimalist prompts with an interactive installer. Choose your style, install instantly. Create custom themes based on existing ones. Switch between themes instantly.
+
+Now includes Fish and Starship themes!
 
 ## Features
 
@@ -54,14 +56,15 @@ Use arrow keys to preview themes, select "Create Custom" to make your own, press
 
 ## Requirements
 
-- **Zsh shell**
 - **curl** (for installer)
 - **Nerd Font** (for icons theme) - [Install here](https://www.nerdfonts.com/)
 
 ## Uninstall
-
+### Zsh
 Remove from `.zshrc`:
 ```bash
 # Delete this line from ~/.zshrc
 source ~/.promptly.zsh
 ```
+### Starship & Fish
+Just install another theme.
