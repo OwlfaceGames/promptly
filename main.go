@@ -61,10 +61,7 @@ func main() {
 	var supported []Theme
 	for _, t := range themes {
 		if t.IsCustom && t.Name == "Create Custom" {
-			// Only offer custom theme creation for zsh
-			if shell == ShellZsh {
-				supported = append(supported, t)
-			}
+			supported = append(supported, t)
 			continue
 		}
 		if _, ok := t.Contents[shell]; ok {
@@ -77,7 +74,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	selectedTheme, err := selectTheme(supported)
+	selectedTheme, err := selectTheme(supported, shell)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error selecting theme: %v\n", err)
 		os.Exit(1)
@@ -133,6 +130,23 @@ func selectShell() (ShellTarget, error) {
 	return shells[i].Value, nil
 }
 
+func selectStarshipShell() (string, error) {
+	shells := []string{"zsh", "bash", "fish"}
+
+	prompt := promptui.Select{
+		Label: "Which shell are you running starship on top of?",
+		Items: shells,
+		Size:  len(shells),
+	}
+
+	i, _, err := prompt.Run()
+	if err != nil {
+		return "", err
+	}
+
+	return shells[i], nil
+}
+
 // ─────────────────────────────────────────────────────────────
 // Theme loading
 // ─────────────────────────────────────────────────────────────
@@ -182,7 +196,7 @@ func loadThemes() ([]Theme, error) {
 		themes = append(themes, *t)
 	}
 
-	// Load custom themes (zsh only)
+	// Load custom themes from ~/.config/promptly
 	customThemes, err := loadCustomThemes()
 	if err == nil {
 		themes = append(themes, customThemes...)
@@ -218,9 +232,7 @@ func getThemeDescription(name string) string {
 // Preview generation — melange palette throughout
 // ─────────────────────────────────────────────────────────────
 
-// Melange hex helpers
 func mel(hex, text string) string {
-	// Parse #RRGGBB and emit an ANSI 24-bit foreground sequence
 	var r, g, b int
 	fmt.Sscanf(hex[1:], "%02x%02x%02x", &r, &g, &b)
 	return fmt.Sprintf("\033[38;2;%d;%d;%dm%s\033[0m", r, g, b, text)
@@ -242,10 +254,9 @@ func generatePreview(name string) string {
 }
 
 func melangePreview() string {
-	// Colors straight from melange.promptly.zsh
 	dir := mel("#C1A78E", "~/projects/myapp")
 	on := mel("#867462", "on")
-	gitIcon := mel("#89B3B6", "\uf408 \ue725 ") // GitHub + branch icon
+	gitIcon := mel("#89B3B6", "\uf408 \ue725 ")
 	branch := mel("#A3A9CE", "main")
 	ahead := mel("#89B3B6", "⇡1")
 	staged := mel("#85B695", "+2")
@@ -259,7 +270,6 @@ func melangePreview() string {
 }
 
 func defaultPreview() string {
-	// Use melange warm/neutral tones for non-melange themes so the TUI feels consistent
 	dir := color.New(color.FgCyan).Sprint("~/projects/myapp")
 	git := color.New(color.FgBlue).Sprint("git(") +
 		color.New(color.FgMagenta).Sprint("main") +
@@ -296,7 +306,7 @@ func semicolonPreview() string {
 // Theme selection UI
 // ─────────────────────────────────────────────────────────────
 
-func selectTheme(themes []Theme) (Theme, error) {
+func selectTheme(themes []Theme, shell ShellTarget) (Theme, error) {
 	templates := &promptui.SelectTemplates{
 		Label:    "{{ . }}:",
 		Active:   "▸ {{ .Name | cyan }} - {{ .Description }}",
@@ -320,7 +330,7 @@ func selectTheme(themes []Theme) (Theme, error) {
 	}
 
 	if themes[i].Name == "Create Custom" {
-		return selectCustomThemeBase(themes)
+		return selectCustomThemeBase(themes, shell)
 	}
 
 	return themes[i], nil
@@ -378,14 +388,29 @@ func installFish(theme Theme) error {
 		return fmt.Errorf("failed to get home directory: %w", err)
 	}
 
-	fishFuncsDir := filepath.Join(homeDir, ".config", "fish", "functions")
-	if err := os.MkdirAll(fishFuncsDir, 0755); err != nil {
-		return fmt.Errorf("failed to create fish functions directory: %w", err)
+	promptlyDir := filepath.Join(homeDir, ".config", "promptly")
+	if err := os.MkdirAll(promptlyDir, 0755); err != nil {
+		return fmt.Errorf("failed to create promptly config directory: %w", err)
 	}
 
-	promptPath := filepath.Join(fishFuncsDir, "fish_prompt.fish")
-	return os.WriteFile(promptPath, []byte(theme.Contents[ShellFish]), 0644)
-	// fish auto-loads functions/ — no config.fish edit needed
+	promptlyPath := filepath.Join(promptlyDir, "promptly.fish")
+	configFishPath := filepath.Join(homeDir, ".config", "fish", "config.fish")
+
+	content := theme.Contents[ShellFish]
+
+	if theme.IsCustom {
+		configThemePath := filepath.Join(promptlyDir, theme.Name+".promptly.fish")
+		if err := os.WriteFile(configThemePath, []byte(content), 0644); err != nil {
+			return err
+		}
+		content = fmt.Sprintf("# Promptly theme sourcing\nsource %s\n", configThemePath)
+	}
+
+	if err := os.WriteFile(promptlyPath, []byte(content), 0644); err != nil {
+		return err
+	}
+
+	return updateRCFile(configFishPath, fmt.Sprintf("source %s", promptlyPath), "# Promptly - Custom shell prompt theme")
 }
 
 func installStarship(theme Theme) error {
@@ -394,30 +419,68 @@ func installStarship(theme Theme) error {
 		return fmt.Errorf("failed to get home directory: %w", err)
 	}
 
-	configDir := filepath.Join(homeDir, ".config")
-	if err := os.MkdirAll(configDir, 0755); err != nil {
-		return fmt.Errorf("failed to create .config directory: %w", err)
+	promptlyDir := filepath.Join(homeDir, ".config", "promptly")
+	if err := os.MkdirAll(promptlyDir, 0755); err != nil {
+		return fmt.Errorf("failed to create promptly config directory: %w", err)
 	}
 
-	tomlPath := filepath.Join(configDir, "starship.toml")
-	if err := os.WriteFile(tomlPath, []byte(theme.Contents[ShellStarship]), 0644); err != nil {
-		return err
+	underlyingShell, err := selectStarshipShell()
+	if err != nil {
+		return fmt.Errorf("failed to select shell: %w", err)
 	}
 
-	// Ensure starship is initialised in whichever rc files exist
-	rcFiles := map[string]string{
-		filepath.Join(homeDir, ".zshrc"):                          `eval "$(starship init zsh)"`,
-		filepath.Join(homeDir, ".bashrc"):                         `eval "$(starship init bash)"`,
-		filepath.Join(homeDir, ".config", "fish", "config.fish"): "starship init fish | source",
-	}
-
-	for rcPath, initCmd := range rcFiles {
-		if _, err := os.Stat(rcPath); os.IsNotExist(err) {
-			continue
-		}
-		if err := updateRCFile(rcPath, initCmd, "# Promptly - Starship init"); err != nil {
+	var tomlPath string
+	if theme.IsCustom {
+		// Point directly at the custom toml file
+		tomlPath = filepath.Join(promptlyDir, theme.Name+".promptly.toml")
+		if err := os.WriteFile(tomlPath, []byte(theme.Contents[ShellStarship]), 0644); err != nil {
 			return err
 		}
+	} else {
+		// Write to the shared promptly.toml pointer file
+		tomlPath = filepath.Join(promptlyDir, "promptly.toml")
+		if err := os.WriteFile(tomlPath, []byte(theme.Contents[ShellStarship]), 0644); err != nil {
+			return err
+		}
+	}
+
+	type rcEntry struct {
+		path      string
+		configCmd string
+		initCmd   string
+	}
+
+	var entry rcEntry
+	switch underlyingShell {
+	case "zsh":
+		entry = rcEntry{
+			path:      filepath.Join(homeDir, ".zshrc"),
+			configCmd: fmt.Sprintf("export STARSHIP_CONFIG=%s", tomlPath),
+			initCmd:   `eval "$(starship init zsh)"`,
+		}
+	case "bash":
+		entry = rcEntry{
+			path:      filepath.Join(homeDir, ".bashrc"),
+			configCmd: fmt.Sprintf("export STARSHIP_CONFIG=%s", tomlPath),
+			initCmd:   `eval "$(starship init bash)"`,
+		}
+	case "fish":
+		entry = rcEntry{
+			path:      filepath.Join(homeDir, ".config", "fish", "config.fish"),
+			configCmd: fmt.Sprintf("set -x STARSHIP_CONFIG %s", tomlPath),
+			initCmd:   "starship init fish | source",
+		}
+	}
+
+	if _, err := os.Stat(entry.path); os.IsNotExist(err) {
+		return fmt.Errorf("could not find rc file at %s", entry.path)
+	}
+
+	if err := updateRCFile(entry.path, entry.configCmd, "# Promptly - Starship config"); err != nil {
+		return err
+	}
+	if err := updateRCFile(entry.path, entry.initCmd, "# Promptly - Starship init"); err != nil {
+		return err
 	}
 
 	return nil
@@ -477,30 +540,39 @@ func loadCustomThemes() ([]Theme, error) {
 
 	themeMap := make(map[string]*Theme)
 
+	type shellFile struct {
+		suffix string
+		shell  ShellTarget
+	}
+	shellFiles := []shellFile{
+		{".promptly.zsh", ShellZsh},
+		{".promptly.fish", ShellFish},
+		{".promptly.toml", ShellStarship},
+	}
+
 	for _, file := range files {
-		// Custom themes are zsh only
-		if !strings.HasSuffix(file.Name(), ".promptly.zsh") {
-			continue
-		}
-
-		filePath := filepath.Join(configDir, file.Name())
-		content, err := os.ReadFile(filePath)
-		if err != nil {
-			continue
-		}
-
-		name := strings.TrimSuffix(file.Name(), ".promptly.zsh")
-		if _, ok := themeMap[name]; !ok {
-			themeMap[name] = &Theme{
-				Name:        name,
-				Description: "Custom theme",
-				Contents:    make(map[ShellTarget]string),
-				Preview:     generatePreview(name),
-				IsCustom:    true,
-				SourcePath:  filePath,
+		for _, sf := range shellFiles {
+			if !strings.HasSuffix(file.Name(), sf.suffix) {
+				continue
 			}
+			filePath := filepath.Join(configDir, file.Name())
+			content, err := os.ReadFile(filePath)
+			if err != nil {
+				continue
+			}
+			name := strings.TrimSuffix(file.Name(), sf.suffix)
+			if _, ok := themeMap[name]; !ok {
+				themeMap[name] = &Theme{
+					Name:        name,
+					Description: "Custom theme",
+					Contents:    make(map[ShellTarget]string),
+					Preview:     generatePreview(name),
+					IsCustom:    true,
+					SourcePath:  filePath,
+				}
+			}
+			themeMap[name].Contents[sf.shell] = string(content)
 		}
-		themeMap[name].Contents[ShellZsh] = string(content)
 	}
 
 	var themes []Theme
@@ -510,7 +582,7 @@ func loadCustomThemes() ([]Theme, error) {
 	return themes, nil
 }
 
-func selectCustomThemeBase(allThemes []Theme) (Theme, error) {
+func selectCustomThemeBase(allThemes []Theme, shell ShellTarget) (Theme, error) {
 	var baseThemes []Theme
 	for _, t := range allThemes {
 		if !t.IsCustom && t.Name != "Create Custom" {
@@ -540,10 +612,10 @@ func selectCustomThemeBase(allThemes []Theme) (Theme, error) {
 		return Theme{}, err
 	}
 
-	return createCustomTheme(baseThemes[i])
+	return createCustomTheme(baseThemes[i], shell)
 }
 
-func createCustomTheme(baseTheme Theme) (Theme, error) {
+func createCustomTheme(baseTheme Theme, shell ShellTarget) (Theme, error) {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
 		return Theme{}, fmt.Errorf("failed to get home directory: %w", err)
@@ -562,19 +634,36 @@ func createCustomTheme(baseTheme Theme) (Theme, error) {
 		IsCustom:    true,
 	}
 
-	// Custom themes are zsh only
-	content, ok := baseTheme.Contents[ShellZsh]
-	if !ok {
-		return Theme{}, fmt.Errorf("base theme %q has no zsh variant", baseTheme.Name)
+	type shellFile struct {
+		shell  ShellTarget
+		suffix string
+	}
+	shellFiles := []shellFile{
+		{ShellZsh, ".promptly.zsh"},
+		{ShellFish, ".promptly.fish"},
+		{ShellStarship, ".promptly.toml"},
 	}
 
-	path := filepath.Join(configDir, "custom.promptly.zsh")
-	if err := os.WriteFile(path, []byte(content), 0644); err != nil {
-		return Theme{}, fmt.Errorf("failed to create custom theme file: %w", err)
+	for _, sf := range shellFiles {
+		if sf.shell != shell {
+			continue
+		}
+		content, ok := baseTheme.Contents[sf.shell]
+		if !ok {
+			return Theme{}, fmt.Errorf("base theme %q has no %s variant", baseTheme.Name, shell)
+		}
+		path := filepath.Join(configDir, "custom"+sf.suffix)
+		if err := os.WriteFile(path, []byte(content), 0644); err != nil {
+			return Theme{}, fmt.Errorf("failed to create custom %s theme file: %w", sf.shell, err)
+		}
+		custom.Contents[sf.shell] = content
+		custom.SourcePath = path
+		color.Green("✓ Custom %s theme created at %s", sf.shell, path)
 	}
-	custom.Contents[ShellZsh] = content
-	custom.SourcePath = path
-	color.Green("✓ Custom zsh theme created at %s", path)
+
+	if len(custom.Contents) == 0 {
+		return Theme{}, fmt.Errorf("base theme %q has no supported shell variants", baseTheme.Name)
+	}
 
 	fmt.Println("You can now edit this file to customize your theme.")
 	return custom, nil
