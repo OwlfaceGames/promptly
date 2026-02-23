@@ -1,6 +1,6 @@
 # Promptly
 
-A fast, minimalist prompts with an interactive installer. Choose your style, install instantly. Create custom themes based on existing ones. Switch between themes instantly.
+Fast, minimalist prompts with an interactive installer. Choose your style, install instantly. Create custom themes based on existing ones. Switch between themes instantly.
 
 Now includes Fish and Starship themes!
 
