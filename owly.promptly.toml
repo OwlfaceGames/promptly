@@ -1,0 +1,339 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
+format = "$directory${custom.gitsource}$git_branch$git_status$all$line_break$character"
+
+# ─────────────────────────────────────────────────────────────
+# Prompt character
+# ─────────────────────────────────────────────────────────────
+[character]
+success_symbol = "[;](#3ad0b5)"
+error_symbol   = "[;](#C47B6B)"
+
+
+[odin]
+symbol = ""
+style = "#3ad0b5"
+format = "[via](#4B5345) [$symbol(  $version )]($style)"
+
+[aws]
+symbol = " "
+style = "#d1833f"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[buf]
+symbol = " "
+style = "#3ad0b5"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[bun]
+symbol = " "
+style = "#ffffff"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[c]
+symbol = " "
+style = "#AF9374"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[cpp]
+symbol = " "
+style = "#AF9374"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[cmake]
+symbol = " "
+style = "#AF9374"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[conda]
+symbol = " "
+style = "#53d549"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[crystal]
+symbol = " "
+style = "#ffffff"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[dart]
+symbol = " "
+style = "#3ad0b5"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[deno]
+symbol = " "
+style = "#ffffff"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[directory]
+style     = "#AF9374"
+read_only = " 󰌾"
+
+[docker_context]
+symbol = " "
+style = "#3ad0b5"
+
+[elixir]
+symbol = " "
+style = "#C47B6B"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[elm]
+symbol = " "
+style = "#3ad0b5"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[fennel]
+symbol = " "
+style = "#53d549"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[fortran]
+symbol = " "
+style = "#AF9374"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[fossil_branch]
+symbol = " "
+style = "#AF9374"
+
+[gcloud]
+symbol = " "
+style = "#d1833f"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[git_branch]
+symbol = " "
+format = "[$symbol$branch ]($style)"
+style  = "#3ad0b5"
+
+[custom.gitsource]
+use_stdin = false
+command = """
+set remote (git remote get-url upstream 2>/dev/null; or git remote get-url origin 2>/dev/null)
+if string match -q "*github.com*" $remote
+  echo ""
+else
+  echo "\uf1d3"
+end
+"""
+when = "git rev-parse --is-inside-work-tree"
+shell = ["fish", "--command"]
+format = "[on](#4B5345) [$output ]($style)"
+style = "#3ad0b5"
+
+[git_commit]
+style      = "#3ad0b5"
+tag_symbol = '  '
+
+[git_status]
+format = "([$ahead_behind$staged$modified$untracked$stashed]($style))"
+style     = "bold"
+ahead     = "[⇡$count](#3ad0b5) "
+behind    = "[⇣$count](#3ad0b5) "
+diverged  = "[⇕$ahead_count/$behind_count](#89B3B6) "
+staged    = "[+$count](#3ad0b5) "
+modified  = "[!$count](#E6DB74) "
+untracked = "[?$count](#C47B6B) "
+stashed   = "[$$$count](#FD971F) "
+
+[golang]
+symbol = " "
+style = "#3ad0b5"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[gradle]
+symbol = " "
+style = "#3ad0b5"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[guix_shell]
+symbol = " "
+style = "#53d549"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[haskell]
+symbol = " "
+style = "#AF9374"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[haxe]
+symbol = " "
+style = "#d1833f"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[hg_branch]
+symbol = " "
+style = "#AF9374"
+
+[hostname]
+ssh_symbol = " "
+style = "#E6DB74"
+
+[java]
+symbol = " "
+style = "#d1833f"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[julia]
+symbol = " "
+style = "#AF9374"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[kotlin]
+symbol = " "
+style = "#d1833f"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[lua]
+symbol = " "
+style = "#3ad0b5"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[memory_usage]
+symbol = "󰍛 "
+style = "#AF9374"
+
+[meson]
+symbol = "󰔷 "
+style = "#3ad0b5"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[nim]
+symbol = "󰆥 "
+style = "#E6DB74"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[nix_shell]
+symbol = " "
+style = "#3ad0b5"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[nodejs]
+symbol = " "
+style = "#53d549"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[ocaml]
+symbol = " "
+style = "#d1833f"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[os.symbols]
+Alpaquita = " "
+Alpine = " "
+AlmaLinux = " "
+Amazon = " "
+Android = " "
+AOSC = " "
+Arch = " "
+Artix = " "
+CachyOS = " "
+CentOS = " "
+Debian = " "
+DragonFly = " "
+Elementary = " "
+Emscripten = " "
+EndeavourOS = " "
+Fedora = " "
+FreeBSD = " "
+Garuda = "󰛓 "
+Gentoo = " "
+HardenedBSD = "󰞌 "
+Illumos = "󰈸 "
+Ios = "󰀷 "
+Kali = " "
+Linux = " "
+Mabox = " "
+Macos = " "
+Manjaro = " "
+Mariner = " "
+MidnightBSD = " "
+Mint = " "
+NetBSD = " "
+NixOS = " "
+Nobara = " "
+OpenBSD = "󰈺 "
+openSUSE = " "
+OracleLinux = "󰌷 "
+Pop = " "
+Raspbian = " "
+Redhat = " "
+RedHatEnterprise = " "
+RockyLinux = " "
+Redox = "󰀘 "
+Solus = "󰠳 "
+SUSE = " "
+Ubuntu = " "
+Unknown = " "
+Void = " "
+Windows = "󰍲 "
+Zorin = " "
+
+[package]
+symbol = "󰏗 "
+style = "#d1833f"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[perl]
+symbol = " "
+style = "#3ad0b5"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[php]
+symbol = " "
+style = "#AF9374"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[pijul_channel]
+symbol = " "
+style = "#d1833f"
+
+[pixi]
+symbol = "󰏗 "
+style = "#53d549"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[python]
+symbol = " "
+style = "#E6DB74"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[rlang]
+symbol = "󰟔 "
+style = "#3ad0b5"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[ruby]
+symbol = " "
+style = "#C47B6B"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[rust]
+symbol = "󱘗 "
+style = "#d1833f"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[scala]
+symbol = " "
+style = "#C47B6B"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[status]
+symbol = " "
+style = "#C47B6B"
+
+[swift]
+symbol = " "
+style = "#d1833f"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[xmake]
+symbol = " "
+style = "#d1833f"
+format = "[via](#4B5345) [$symbol($version )]($style)"
+
+[zig]
+symbol = " "
+style = "#E6DB74"
+format = "[via](#4B5345) [$symbol($version )]($style)"

@@ -223,6 +223,8 @@ func getThemeDescription(name string) string {
 		return "ASCII-only prompt with semicolon prompt character"
 	case "melange":
 		return "Warm color palette inspired by the Melange Neovim theme"
+	case "owly":
+		return "Detailed starship prompt with semi colon prompt character in the Owly color scheme."
 	default:
 		return "Custom promptly theme"
 	}
@@ -248,6 +250,8 @@ func generatePreview(name string) string {
 		return iconsPreview()
 	case "semicolon":
 		return semicolonPreview()
+	case "owly":
+		return owlyPreview()
 	default:
 		return "Preview not available for custom themes"
 	}
@@ -263,6 +267,22 @@ func melangePreview() string {
 	unstaged := mel("#EBC06D", "!1")
 	untracked := mel("#D47766", "?3")
 	promptChar := mel("#89B3B6", ";")
+
+	line1 := dir + " " + on + " " + gitIcon + branch + " " + ahead + " " + staged + " " + unstaged + " " + untracked
+	line2 := promptChar + " "
+	return line1 + "\n" + line2
+}
+
+func owlyPreview() string {
+	dir := mel("#AF9374", "~/projects/myapp")
+	on := mel("#4B5345", "on")
+	gitIcon := mel("#3ad0b5", "\uf113 \ue725 ")
+	branch := mel("#3ad0b5", "main")
+	ahead := mel("#3ad0b5", "⇡1")
+	staged := mel("#3ad0b5", "+2")
+	unstaged := mel("#E6DB74", "!1")
+	untracked := mel("#C47B6B", "?3")
+	promptChar := mel("#3ad0b5", ";")
 
 	line1 := dir + " " + on + " " + gitIcon + branch + " " + ahead + " " + staged + " " + unstaged + " " + untracked
 	line2 := promptChar + " "
