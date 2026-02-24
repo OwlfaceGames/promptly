@@ -9,6 +9,9 @@ format = "$directory${custom.gitsource}$git_branch$git_status$all$line_break$cha
 success_symbol = "[;](#3ad0b5)"
 error_symbol   = "[;](#C47B6B)"
 
+[cmd_duration]
+format = "[took](#4B5345) [$duration]($style)"
+style = "#AF9374"
 
 [odin]
 symbol = ""
