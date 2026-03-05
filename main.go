@@ -225,6 +225,8 @@ func getThemeDescription(name string) string {
 		return "Warm color palette inspired by the Melange Neovim theme"
 	case "owly":
 		return "Detailed starship prompt with semi colon prompt character in the Owly color scheme."
+	case "owly-simple":
+		return "Single-line owly variant without GitHub detection, arrow prompt character."
 	default:
 		return "Custom promptly theme"
 	}
@@ -252,6 +254,8 @@ func generatePreview(name string) string {
 		return semicolonPreview()
 	case "owly":
 		return owlyPreview()
+	case "owly-simple":
+		return owlySimplePreview()
 	default:
 		return "Preview not available for custom themes"
 	}
@@ -287,6 +291,18 @@ func owlyPreview() string {
 	line1 := dir + " " + on + " " + gitIcon + branch + " " + ahead + " " + staged + " " + unstaged + " " + untracked
 	line2 := promptChar + " "
 	return line1 + "\n" + line2
+}
+
+func owlySimplePreview() string {
+	dir := mel("#AF9374", "~/projects/myapp")
+	on := mel("#4B5345", "on")
+	branch := mel("#3ad0b5", "\ue725 main")
+	staged := mel("#3ad0b5", "+2")
+	unstaged := mel("#E6DB74", "!1")
+	untracked := mel("#C47B6B", "?3")
+	promptChar := mel("#3ad0b5", "➜")
+
+	return dir + " " + on + " " + branch + " " + staged + " " + unstaged + " " + untracked + " " + promptChar + " "
 }
 
 func defaultPreview() string {
@@ -451,13 +467,11 @@ func installStarship(theme Theme) error {
 
 	var tomlPath string
 	if theme.IsCustom {
-		// Point directly at the custom toml file
 		tomlPath = filepath.Join(promptlyDir, theme.Name+".promptly.toml")
 		if err := os.WriteFile(tomlPath, []byte(theme.Contents[ShellStarship]), 0644); err != nil {
 			return err
 		}
 	} else {
-		// Write to the shared promptly.toml pointer file
 		tomlPath = filepath.Join(promptlyDir, "promptly.toml")
 		if err := os.WriteFile(tomlPath, []byte(theme.Contents[ShellStarship]), 0644); err != nil {
 			return err
