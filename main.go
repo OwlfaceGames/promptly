@@ -302,7 +302,7 @@ func owlySimplePreview() string {
 	untracked := mel("#C47B6B", "?3")
 	promptChar := mel("#3ad0b5", "➜")
 
-	return dir + " " + on + " " + branch + " " + staged + " " + unstaged + " " + untracked + " " + promptChar + " "
+	return promptChar + " " + dir + " " + on + " " + branch + " " + staged + " " + unstaged + " " + untracked + " " 
 }
 
 func defaultPreview() string {
